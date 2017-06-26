@@ -1,4 +1,5 @@
 package main.java;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -11,6 +12,11 @@ import java.net.URL;
 
 public class Main {
     public static void main(String[] args) throws URISyntaxException, IOException {
+
+        printGoldPrice();
+
+        System.out.println();
+        System.out.println();
 
         printChfRate();
 
@@ -67,13 +73,30 @@ public class Main {
         while ((line = bufferedReader.readLine()) != null) {
             stringBuilder.append(line);
         }
-
         JSONObject jsonObject = new JSONObject(stringBuilder.toString());
         JSONArray jsonRates = (JSONArray) jsonObject.get("rates");
-
-        JSONObject chf = (JSONObject)jsonRates.get(0);
+        JSONObject chf = (JSONObject) jsonRates.get(0);
         String chfRate = chf.get("mid").toString();
+        System.out.println("Swiss franc exchange rate " + chfRate);
+    }
 
-        System.out.println(chfRate);
+    private static void printGoldPrice() throws IOException {
+        URL url = new URL("http://api.nbp.pl/api/cenyzlota/");
+        HttpURLConnection http = (HttpURLConnection) url.openConnection();
+        http.setRequestMethod("GET");
+        http.connect();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(http.getInputStream()));
+        String line = null;
+        StringBuilder stringBuilder = new StringBuilder();
+        while ((line = bufferedReader.readLine()) != null) {
+            stringBuilder.append(line);
+        }
+        JSONArray jsonRates = new JSONArray(stringBuilder.toString());
+        JSONObject jsonObject = (JSONObject) jsonRates.get(0);
+
+        double goldPrice = jsonObject.getDouble("cena");
+
+        System.out.println("Gold price: " + goldPrice);
+
     }
 }
