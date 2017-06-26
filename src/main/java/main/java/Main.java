@@ -1,5 +1,4 @@
 package main.java;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -10,11 +9,13 @@ import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-/**
- * Created by lhyla on 26.06.2017.
- */
 public class Main {
     public static void main(String[] args) throws URISyntaxException, IOException {
+
+        printChfRate();
+
+        System.out.println();
+        System.out.println();
         String[] tables = {"A", "B", "C"};
 
         for (String table : tables) {
@@ -52,5 +53,27 @@ public class Main {
             }
             System.out.println();
         }
+    }
+
+    public static void printChfRate() throws IOException {
+        URL url = new URL("http://api.nbp.pl/api/exchangerates/rates/a/chf/");
+
+        HttpURLConnection http = (HttpURLConnection) url.openConnection();
+        http.setRequestMethod("GET");
+        http.connect();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(http.getInputStream()));
+        String line = null;
+        StringBuilder stringBuilder = new StringBuilder();
+        while ((line = bufferedReader.readLine()) != null) {
+            stringBuilder.append(line);
+        }
+
+        JSONObject jsonObject = new JSONObject(stringBuilder.toString());
+        JSONArray jsonRates = (JSONArray) jsonObject.get("rates");
+
+        JSONObject chf = (JSONObject)jsonRates.get(0);
+        String chfRate = chf.get("mid").toString();
+
+        System.out.println(chfRate);
     }
 }
